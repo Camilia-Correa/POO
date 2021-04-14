@@ -1,0 +1,562 @@
+#include <stdio.h>
+#include <windows.h>                     
+#include <iostream>                    
+#include <conio.h>  
+          		        
+using namespace std;                 
+
+
+int gotoxy(USHORT x,USHORT y){                                  
+COORD cp={x,y};                                                 
+SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE),cp);   
+}
+
+void titulos();
+int  menu();
+void mostrarsudoku( int arreglo[10][10], int Nfilas, int Ncolumnas );
+void crearsudoku( int arreglo[10][10], int Nfilas, int Ncolumnas );
+void solucionsudoku( int arreglo[10][10], int Nfilas, int Ncolumnas );
+bool Valida(int arreglo[10][10]);
+int cont_3=0;
+main()
+    {
+    int  opcion, numeroColumnas=4, numeroFilas=4; 
+    int  matriz[10][10];
+    char op = 'S';
+
+    while ( op == 'S')
+    {
+    titulos();
+    opcion = menu();
+  
+	switch (opcion)  {
+        case 1 : titulos();
+			    crearsudoku(matriz, numeroFilas, numeroColumnas);
+                break;
+                
+        case 2 : mostrarsudoku(matriz, numeroFilas, numeroColumnas);
+                break;
+                
+        case 3 : op  = 'N';
+      };
+     }
+    }
+    
+ void titulos()//Funcion de Titulos
+    {
+    system("cls");
+    system("color f0");
+    gotoxy(34,5); cout <<"SUDOKU COLOMBIA";
+    }
+
+ int menu()//funcion menu
+    {
+    int OP;
+  
+    gotoxy(23,9); cout << "1.) Registrar los datos del sudoku." ;
+    gotoxy(23,11); cout << "2.) mostrar sudoku y su solucion.";
+    gotoxy(23,13); cout << "3.) salir.";
+    do {
+    gotoxy(23,16); cout << "Seleccione una opcion :  [ _ ]";
+    gotoxy(50,16); cin >> OP ;
+    }  while (( OP < 1 ) || ( OP > 4));
+    return OP;
+    }
+
+
+ void crearsudoku( int arreglo[10][10], int numeroFilas, int numeroColumnas )//Funcion para llenar la matriz 
+    {
+    int columnas, filas ;
+    titulos();
+    gotoxy(20,7); cout <<"REGISTRAR LOS VALORES DEL SUDOKU";
+    for ( filas = 0 ; filas < numeroFilas ; filas++ ) {
+	    gotoxy(12,19); cout << "Digite valor entre 0 - 4 ";	
+    	for ( columnas = 0 ;  columnas < numeroColumnas ; columnas++ ) {
+	    	do {
+	    		gotoxy(12,10); cout << "Introducir un valor"<<filas<<","  <<columnas<<"[   ]" ;
+	    		gotoxy(35,10); cin >> arreglo[filas][columnas] ;	
+	   			gotoxy(12,19); cout << "ERROR ......Digite valor entre 0 - 4 ";
+	    	} while ((arreglo[filas][columnas] < 0) || (arreglo[filas][columnas] > 4 )) ;
+	    gotoxy(12,19); cout << "Digite valor entre 0 - 4                ";
+	    }
+	}
+}
+   
+
+
+ void mostrarsudoku( int arreglo[10][10], int numeroFilas, int numeroColumnas  ) {  //Mostramos  el contenido de la matriz
+    int  vector[100],filas, columnas, f;
+    int cont;
+    int suma;
+	titulos();
+	gotoxy(14,8) ; cout << " DATOS DEL SUDOKU A RESOLVER" ;
+	gotoxy(50,8) ; cout << " SOLUCION DEL SUDOKU INGRESADO" ; 
+	f = 10 ;
+
+	for ( filas = 0 ; filas < numeroFilas ; filas++ ){
+		cont=0;
+	    gotoxy(14,f) ;
+    	for ( columnas = 0 ; columnas < numeroColumnas ; columnas++ ){
+    		if(arreglo[filas][columnas]==0){cont=cont+1;
+    			
+    			
+			}
+	    	printf ("%3d %3s", arreglo[filas][columnas], "   ") ;	
+	    }
+	    f++;
+	}
+
+	solucionsudoku(arreglo, numeroFilas, numeroColumnas);
+	gotoxy(17,f+3); cout << "Presione cualquier tecla para terminar ...";
+	getch();
+}
+
+void solucionsudoku(int arreglo[10][10], int numeroFilas, int numeroColumnas){//Funcion que soluciona el sudoku
+	int  vector[100],filas, columnas, f;//Declaramos variables para  utilizarse  en el procesos 
+	int vector2[] = {1,2,3,4};
+    int cont;
+    int cont2;
+    int suma;	
+    int x1,x2,y1,y2;
+    int v1,v2,v3,v4;
+	f = 10 ;
+	bool ver=true;
+   
+	
+	// buscamos los ceros en cada fila  y los contamos 
+	for ( filas = 0 ; filas < numeroFilas ; filas++ ){
+		cont=0;
+		cont2=0;
+	   
+    	for ( columnas = 0 ; columnas < numeroColumnas ; columnas++ ){
+    		
+    		
+    		if(arreglo[filas][columnas]==0){
+			
+			 if(cont==0){ x1=filas; y1=columnas; }
+			 if(cont==1){ x2=filas; y2=columnas;}
+			cont=cont+1; 
+    			
+    			
+			}else { if(cont2==0){v1=arreglo[filas][columnas];
+			              }
+			        if(cont2==1){v2=arreglo[filas][columnas];
+						}
+			        
+			        cont2++;
+			    }
+	    	
+	    }
+	    
+	    if(cont==1){  suma=0; //Si la cantidad de ceros es igual a 1  calculamos el valor que falta en la casilla  a part3 de la suma de los otros elementos 
+	    	for ( columnas = 0 ; columnas < numeroColumnas ; columnas++ ){   suma=suma+arreglo[filas][columnas];                         }
+	    	for ( columnas = 0 ; columnas < numeroColumnas ; columnas++ ){  if(arreglo[filas][columnas]==0){  arreglo[filas][columnas]=10-suma;                   }   }
+		}
+		
+		
+	
+		   if(cont==2){ // si la cantida  de ceros  es igual a 2, averiguamos cuales son los valores precentes y cuales faltan, los que faltan los asignamos ala variable  v1 y v2
+		   
+	
+		 
+		                 
+		                  for ( columnas = 0 ; columnas < numeroColumnas ; columnas++ ){  if(v1==vector2[columnas]){ vector2[columnas]=0; }  }
+		                  
+		                  
+
+		                 for ( columnas = 0 ; columnas < numeroColumnas ; columnas++ ){  if(v2==vector2[columnas]){ vector2[columnas]=0; }  }
+		                 
+		                
+                     //los valores que faltan en la fila los guradamos en las variables  v3 y v4
+		                 for ( columnas = 0 ; columnas < numeroColumnas ; columnas++ ){  if(vector2[columnas]!=0){v3=vector2[columnas];  vector2[columnas]=0; columnas=numeroColumnas;  }  }
+		                 
+		                 
+		                 for ( columnas = 0 ; columnas < numeroColumnas ; columnas++ ){  if(vector2[columnas]!=0){v4=vector2[columnas]; vector2[columnas]=0;columnas=numeroColumnas; }  }
+		                 
+		                 
+
+	    	//calculamos cuales son los valores que van que faltan, buscando si ese valor se encuntra en la columna donde se cada valor 
+	    	for ( columnas = 0 ; columnas < numeroColumnas ; columnas++ ){   if(arreglo[columnas][y1]==v3){   arreglo[x2][y2] =v3; arreglo[x1][y1] =v4;  ver=false;  columnas=numeroColumnas;         }   }
+	    	
+	    	
+	    	if(ver){for ( columnas = 0 ; columnas < numeroColumnas ; columnas++ ){  if(arreglo[columnas][y2]==v3){   arreglo[x1][y1] =v3; arreglo[x2][y2] =v4;  ver=false; columnas=numeroColumnas;             }   }
+			}
+			
+			if(ver){for ( columnas = 0 ; columnas < numeroColumnas ; columnas++ ){  if(arreglo[columnas][y1]==v4){   arreglo[x1][y1] =v3; arreglo[x2][y2] =v4;  ver=false; columnas=numeroColumnas;             }   }
+			}
+			
+			if(ver){for ( columnas = 0 ; columnas < numeroColumnas ; columnas++ ){  if(arreglo[columnas][y2]==v4){   arreglo[x2][y2] =v3; arreglo[x1][y1] =v4;  ver=false;  columnas=numeroColumnas;            }   }
+			}
+	    	
+	    	
+	    	
+		
+			              } 
+						   //fin de if de 2 ceros
+						  
+			vector2[0]=1;vector2[1]=2;vector2[2]=3;vector2[3]=4;	//Reinicimoas  el vector utilizado para averiguar que valores faltaban en la fila , para su posterior uso 	   
+	    	
+		}//fin de for buscar en fila 
+	    
+	    	
+	  ver=true;  
+	
+	//buscar ceros en columnas
+	for ( columnas = 0 ; columnas < numeroColumnas ; columnas++ ){
+		cont=0;
+		cont2=0;
+	   
+    	for (filas = 0 ; filas < numeroFilas ; filas++  ){
+    	
+		
+			if(arreglo[filas][columnas]==0){
+			
+			 if(cont==0){ x1=filas; y1=columnas; }
+			 if(cont==1){ x2=filas; y2=columnas;}
+			 
+			 
+			cont=cont+1;
+    			
+    			
+			}else { if(cont2==0){v1=arreglo[filas][columnas];
+			              }
+			        if(cont2==1){v2=arreglo[filas][columnas];
+						}
+			        
+			        cont2++;
+			    }
+	   	
+	    }
+	    
+	    
+	    
+	    // si la cantidad de ceros es igual a 1, calculamos  el valor faltante de la columna, a partir de la suma de los otros valores 
+	    
+	    if(cont==1){  suma=0;
+	    	for ( filas = 0 ; filas < numeroColumnas ; filas++ ){   suma=suma+arreglo[filas][columnas];                         }
+	    	for ( filas = 0 ; filas < numeroColumnas ; filas++ ){  if(arreglo[filas][columnas]==0){  arreglo[filas][columnas]=10-suma;                   }   }
+		}
+	    
+	    //si el la cantidad de ceros en la columna es igual a 2, averiguamos cuales son los valores que faltan en la columna  usando el Vector2 y las variable v1 y v2, donde se habia guardado los valores  que estan la colunma 
+	    if(cont==2){ 
+		   
+		  
+		                 
+		                  for ( columnas = 0 ; columnas < numeroColumnas ; columnas++ ){  if(v1==vector2[columnas]){ vector2[columnas]=0; }  }
+		                  
+		                  
+		  
+		                 
+		                 
+		                 
+		                 for ( columnas = 0 ; columnas < numeroColumnas ; columnas++ ){  if(v2==vector2[columnas]){ vector2[columnas]=0; }  }
+		                 
+		                 cout<<endl<<endl<<endl<<endl;
+		                 
+		                 
+		                
+		                 
+		                 
+		                 for ( columnas = 0 ; columnas < numeroColumnas ; columnas++ ){  if(vector2[columnas]!=0){v3=vector2[columnas];  vector2[columnas]=0; columnas=numeroColumnas;  }  }
+		                 
+		                 
+		                 for ( columnas = 0 ; columnas < numeroColumnas ; columnas++ ){  if(vector2[columnas]!=0){v4=vector2[columnas]; vector2[columnas]=0;columnas=numeroColumnas; }  }
+		                 
+		                 
+		                
+		                 
+		   
+		  // getch();
+		 // verificamos si  el valor que hace falta en la columna se cuentra en la fina donde esta el valor que falta, esto lo hacemos recoriento la fila  con un for.
+	    	
+	    	for ( columnas = 0 ; columnas < numeroColumnas ; columnas++ ){   if(arreglo[x1][columnas]==v3){   arreglo[x2][y2] =v3; arreglo[x1][y1] =v4;  ver=false;  columnas=numeroColumnas;                  }   }
+	    	
+	    	
+	    	if(ver){for ( columnas = 0 ; columnas < numeroColumnas ; columnas++ ){  if(arreglo[x2][columnas]==v3){   arreglo[x1][y1] =v3; arreglo[x2][y2] =v4;  ver=false; columnas=numeroColumnas;             }   }
+			}
+			
+			if(ver){for ( columnas = 0 ; columnas < numeroColumnas ; columnas++ ){  if(arreglo[x1][columnas]==v4){   arreglo[x1][y1] =v3; arreglo[x2][y2] =v4;  ver=false; columnas=numeroColumnas;             }   }
+			}
+			
+			if(ver){for ( columnas = 0 ; columnas < numeroColumnas ; columnas++ ){  if(arreglo[x2][columnas]==v4){   arreglo[x2][y2] =v3; arreglo[x1][y1] =v4;  ver=false;  columnas=numeroColumnas;            }   }
+			}
+	    	
+	    	
+	    	
+		
+			              } 
+						   //fin de if de 2 ceros
+	    
+	  
+	  
+	}	//fin de for buscar columnas 
+	
+	
+
+	
+	
+	
+	//buscar en los recuadros 
+	ver=true;
+	cont=0;
+	suma=0;
+	cont2=0;
+	int x,y;
+	int x3,y3;
+	int a1,a2;
+	
+	
+	//verificamos  qu cuantos cerros hay en el primer cuadrante 
+	if(arreglo[0][0]==0 || arreglo[0][1]==0 || arreglo[1][0]==0 ||  arreglo[1][1]==0)
+		
+		
+		
+		{
+			
+	/*		
+		if(arreglo[0][0]==0){cont=cont+1;x=0;y=0;	}else{suma=suma+arreglo[0][0];	}
+		if(arreglo[0][1]==0){cont=cont+1;x=0;y=1;	}else{suma=suma+arreglo[0][1];	}
+		if(arreglo[1][0]==0){cont=cont+1;x=1;y=0;	}else{suma=suma+arreglo[1][0];	}
+		if(arreglo[1][1]==0){cont=cont+1;x=1;y=1;	}else{suma=suma+arreglo[1][1];	}
+			
+			*/
+		if(arreglo[0][0]==0){cont=cont+1;             if(cont==1){x=0;y=0;} if(cont==2){x3=0;y3=0;} }else{suma=suma+arreglo[0][0];  if(cont2==0){a1=arreglo[0][0]; cont2++;	}	}
+		if(arreglo[0][1]==0){cont=cont+1;             if(cont==1){x=0;y=1;} if(cont==2){x3=0;y3=1;} }else{suma=suma+arreglo[0][1];	if(cont2==0){a1=arreglo[0][1]; 	}else {a2=arreglo[0][1];	} cont2++;   }
+		if(arreglo[1][0]==0){cont=cont+1;             if(cont==1){x=1;y=0;} if(cont==2){x3=1;y3=0;} }else{suma=suma+arreglo[1][0];  if(cont2==0){a1=arreglo[1][0]; 	}else {a2=arreglo[1][0];	} cont2++; 	}
+		if(arreglo[1][1]==0){cont=cont+1;             if(cont==1){x=1;y=1;} if(cont==2){x3=1;y3=1;} }else{suma=suma+arreglo[1][1];  if(cont2==0){a1=arreglo[1][1]; 	}else {a2=arreglo[1][1];	} cont2++; 	}
+	
+		
+		//para cuando solo hay un cero en la sub cuadricula
+		if(cont==1){arreglo[x][y]=10-suma; 		}
+		
+		
+	//para cuado hay 2 ceros en la sub cuadricula 	
+	
+	
+	if(cont==2){
+		//Saber si esta e la misma fila
+			if(x==x3){for ( columnas = 0 ; columnas < numeroColumnas ; columnas++ ){  if(arreglo[columnas][y]!=0 && arreglo[columnas][y]!=a1 && arreglo[columnas][y]!=a2)      {   arreglo[x3][y3] =arreglo[columnas][y]; arreglo[x][y] =10-( suma+arreglo[columnas][y]);  ver=false;  columnas=numeroColumnas; } }
+			
+			  if(ver){for ( columnas = 0 ; columnas < numeroColumnas ; columnas++ ){  if(arreglo[columnas][y3]!=0 && arreglo[columnas][y3]!=a1 && arreglo[columnas][y3]!=a2)   {   arreglo[x][y] =arreglo[columnas][y3]; arreglo[x3][y3] =10-( suma+arreglo[columnas][y3]);  ver=false;  columnas=numeroColumnas; } }}
+			}
+			//saber si estan en la misma columna
+			if(y==y3){
+			      	  for ( columnas = 0 ; columnas < numeroColumnas ; columnas++ ){  if(arreglo[x][columnas]!=0 && arreglo[x][columnas]!=a1 && arreglo[x][columnas]!=a2)   {      arreglo[x3][y3] =arreglo[x][columnas]; arreglo[x][y] =10-( suma+arreglo[x][columnas]);  ver=false;  columnas=numeroColumnas; } }
+			
+			  if(ver){for ( columnas = 0 ; columnas < numeroColumnas ; columnas++ ){  if(arreglo[x3][columnas]!=0 && arreglo[x3][columnas]!=a1 && arreglo[x3][columnas]!=a2)   {   arreglo[x][y] =arreglo[x3][columnas]; arreglo[x3][y3] =10-(  suma+arreglo[x3][columnas]);  ver=false;  columnas=numeroColumnas; } }}
+			}
+	
+		}//fin de contador 2	
+		
+				}//fin del primer recuadro
+				
+				
+		
+		
+
+	  cont=0; cont2=0;	suma=0; ver=true;
+	//segundo recuadro
+		if(arreglo[2][0]==0 || arreglo[2][1]==0 || arreglo[3][0]==0 ||  arreglo[3][1]==0)
+		
+		{ 
+	/*
+		if(arreglo[2][0]==0){cont=cont+1;x=2;y=0;	}else{suma=suma+arreglo[2][0];	}
+		if(arreglo[2][1]==0){cont=cont+1;x=2;y=1;	}else{suma=suma+arreglo[2][1];	}
+		if(arreglo[3][0]==0){cont=cont+1;x=3;y=0;	}else{suma=suma+arreglo[3][0];	}
+		if(arreglo[3][1]==0){cont=cont+1;x=3;y=1;	}else{suma=suma+arreglo[3][1];	}
+		*/
+		
+		if(arreglo[2][0]==0){cont=cont+1;             if(cont==1){x=2;y=0;} if(cont==2){x3=2;y3=0;} }else{suma=suma+arreglo[2][0];  if(cont2==0){a1=arreglo[2][0]; cont2++;	}	}
+		if(arreglo[2][1]==0){cont=cont+1;             if(cont==1){x=2;y=1;} if(cont==2){x3=2;y3=1;} }else{suma=suma+arreglo[2][1];	if(cont2==0){a1=arreglo[2][1]; 	}else {a2=arreglo[2][1];	} cont2++;   }
+		if(arreglo[3][0]==0){cont=cont+1;             if(cont==1){x=3;y=0;} if(cont==2){x3=3;y3=0;} }else{suma=suma+arreglo[3][0];  if(cont2==0){a1=arreglo[3][0]; 	}else {a2=arreglo[3][0];	} cont2++; 	}
+		if(arreglo[3][1]==0){cont=cont+1;             if(cont==1){x=3;y=1;} if(cont==2){x3=3;y3=1;} }else{suma=suma+arreglo[3][1];  if(cont2==0){a1=arreglo[3][1]; 	}else {a2=arreglo[3][1];	} cont2++; 	}
+		
+		 
+				
+		if(cont==1){arreglo[x][y]=10-suma;	cont=0;	suma=0;	}
+		
+			if(cont==2){
+				
+			
+		//Saber si esta e la misma fila
+			if(x==x3){
+			
+			          for ( columnas = 0 ; columnas < numeroColumnas ; columnas++ ){  if(arreglo[columnas][y]!=0 && arreglo[columnas][y]!=a1 && arreglo[columnas][y]!=a2)   {   arreglo[x3][y3] =arreglo[columnas][y]; arreglo[x][y] =10-( suma+arreglo[columnas][y]);  ver=false;  columnas=numeroColumnas; } }
+			
+			  if(ver){for ( columnas = 0 ; columnas < numeroColumnas ; columnas++ ){  if(arreglo[columnas][y3]!=0 && arreglo[columnas][y3]!=a1 && arreglo[columnas][y3]!=a2)   {   arreglo[x][y] =arreglo[columnas][y3]; arreglo[x3][y3] =10-( suma+arreglo[columnas][y3]);  ver=false;  columnas=numeroColumnas; } }}
+			}
+			//saber si estan en la misma columna
+			if(y==y3){
+			          for ( columnas = 0 ; columnas < numeroColumnas ; columnas++ ){  if(arreglo[x][columnas]!=0 && arreglo[x][columnas]!=a1 && arreglo[x][columnas]!=a2)   { arreglo[x3][y3] =arreglo[x][columnas]; arreglo[x][y] =10-(suma+arreglo[x][columnas]);  ver=false;  columnas=numeroColumnas; } }
+			
+			  if(ver){for ( columnas = 0 ; columnas < numeroColumnas ; columnas++ ){  if(arreglo[x3][columnas]!=0 && arreglo[x3][columnas]!=a1 && arreglo[x3][columnas]!=a2) {  arreglo[x][y] =arreglo[x3][columnas]; arreglo[x3][y3] = 10-( suma+arreglo[x3][columnas]);  ver=false;  columnas=numeroColumnas; } }}
+		     	}
+	
+		}//fin de contador 2
+		
+		
+		}//finde subcraicula 2
+		
+			
+		
+		cont=0; cont2=0;	suma=0; ver=true;
+		//tercer recuadro
+			if(arreglo[0][2]==0 || arreglo[0][3]==0 || arreglo[1][2]==0 ||  arreglo[1][3]==0)
+			{ 
+	/*		
+		if(arreglo[0][2]==0){cont=cont+1;x=0;y=2;	}else{suma=suma+arreglo[0][2];	}
+		if(arreglo[0][3]==0){cont=cont+1;x=0;y=3;	}else{suma=suma+arreglo[0][3];	}
+		if(arreglo[1][2]==0){cont=cont+1;x=1;y=2;	}else{suma=suma+arreglo[1][2];	}
+		if(arreglo[1][3]==0){cont=cont+1;x=1;y=3;	}else{suma=suma+arreglo[1][3];	}
+		*/
+		
+		if(arreglo[0][2]==0){cont=cont+1;             if(cont==1){x=0;y=2;} if(cont==2){x3=0;y3=2;} }else{suma=suma+arreglo[0][2];  if(cont2==0){a1=arreglo[0][2]; cont2++;	}	}
+		if(arreglo[0][3]==0){cont=cont+1;             if(cont==1){x=0;y=3;} if(cont==2){x3=0;y3=3;} }else{suma=suma+arreglo[0][3];	if(cont2==0){a1=arreglo[0][3]; 	}else {a2=arreglo[0][3];	} cont2++;   }
+		if(arreglo[1][2]==0){cont=cont+1;             if(cont==1){x=1;y=2;} if(cont==2){x3=1;y3=2;} }else{suma=suma+arreglo[1][2];  if(cont2==0){a1=arreglo[1][2]; 	}else {a2=arreglo[1][2];	} cont2++; 	}
+		if(arreglo[1][3]==0){cont=cont+1;             if(cont==1){x=1;y=3;} if(cont==2){x3=1;y3=3;} }else{suma=suma+arreglo[1][3];  if(cont2==0){a1=arreglo[1][3]; 	}else {a2=arreglo[1][3];	} cont2++; 	}
+		
+		
+		if(cont==1){   arreglo[x][y]=10-suma;	}
+		
+		
+			if(cont==2){
+		//Saber si esta en la misma fila
+			if(x==x3){for ( columnas = 0 ; columnas < numeroColumnas ; columnas++ ){  if(arreglo[columnas][y]!=0 && arreglo[columnas][y]!=a1 && arreglo[columnas][y]!=a2)   {    arreglo[x3][y3] =arreglo[columnas][y]; arreglo[x][y] =10-(  suma+arreglo[columnas][y]);  ver=false;  columnas=numeroColumnas; } }
+			
+			  if(ver){for ( columnas = 0 ; columnas < numeroColumnas ; columnas++ ){  if(arreglo[columnas][y3]!=0 && arreglo[columnas][y3]!=a1 && arreglo[columnas][y3]!=a2)   {   arreglo[x][y] =arreglo[columnas][y3]; arreglo[x3][y3] =10-( suma+arreglo[columnas][y3]);  ver=false;  columnas=numeroColumnas; } }}
+			}
+			//saber si estan en la misma columna
+			if(y==y3){
+				for ( columnas = 0 ; columnas < numeroColumnas ; columnas++ ){  if(arreglo[x][columnas]!=0 && arreglo[x][columnas]!=a1 && arreglo[x][columnas]!=a2)   {   arreglo[x3][y3] =arreglo[x][columnas]; arreglo[x][y] =10-( suma+arreglo[x][columnas]);  ver=false;  columnas=numeroColumnas; } }
+			
+			  if(ver){for ( columnas = 0 ; columnas < numeroColumnas ; columnas++ ){  if(arreglo[x3][columnas]!=0 && arreglo[x3][columnas]!=a1 && arreglo[x3][columnas]!=a2)   {   arreglo[x][y] =arreglo[x3][columnas]; arreglo[x3][y3] =10-( suma+arreglo[x3][columnas]);  ver=false;  columnas=numeroColumnas; } }}
+			}
+	
+		}//fin de contador 2
+	
+		
+		}//fin del recadro3
+		
+		
+		
+			
+		
+	   
+	//cuarto cuadrante
+	
+	
+	
+	
+	
+		if(arreglo[2][2]==0 || arreglo[2][3]==0 || arreglo[3][2]==0 ||  arreglo[3][3]==0)
+		
+		{
+		
+		 cont=0; cont2=0;	suma=0; ver=true;
+		
+		/*
+		if(arreglo[2][2]==0){cont=cont+1;x=2;y=2;	}else{suma=suma+arreglo[2][2];	}
+		if(arreglo[2][3]==0){cont=cont+1;x=2;y=3;	}else{suma=suma+arreglo[2][3];	}
+		if(arreglo[3][2]==0){cont=cont+1;x=3;y=2;	}else{suma=suma+arreglo[3][2];	}
+		if(arreglo[3][3]==0){cont=cont+1;x=3;y=3;	}else{suma=suma+arreglo[3][3];	}
+		*/
+		
+		if(arreglo[2][2]==0){cont=cont+1;             if(cont==1){x=2;y=2;} if(cont==2){x3=2;y3=2;} }else{suma=suma+arreglo[2][2];  if(cont2==0){a1=arreglo[2][2]; cont2++;	}	}
+		if(arreglo[2][3]==0){cont=cont+1;             if(cont==1){x=2;y=3;} if(cont==2){x3=2;y3=3;} }else{suma=suma+arreglo[2][3];	if(cont2==0){a1=arreglo[2][3]; 	}else {a2=arreglo[2][3];	} cont2++;   }
+		if(arreglo[3][2]==0){cont=cont+1;             if(cont==1){x=3;y=2;} if(cont==2){x3=3;y3=2;} }else{suma=suma+arreglo[3][2];  if(cont2==0){a1=arreglo[3][2]; 	}else {a2=arreglo[3][2];	} cont2++; 	}
+		if(arreglo[3][3]==0){cont=cont+1;             if(cont==1){x=3;y=3;} if(cont==2){x3=3;y3=3;} }else{suma=suma+arreglo[3][3];  if(cont2==0){a1=arreglo[3][3]; 	}else {a2=arreglo[3][3];	} cont2++; 	}
+		
+		if(cont==1){ arreglo[x][y]=10-suma;		}
+		
+		
+		
+			if(cont==2){ 
+		//Saber si esta e la misma fila
+			if(x==x3){for ( columnas = 0 ; columnas < numeroColumnas ; columnas++ ){  if(arreglo[columnas][y]!=0 && arreglo[columnas][y]!=a1 && arreglo[columnas][y]!=a2)      {   arreglo[x3][y3] =arreglo[columnas][y]; arreglo[x][y] =10-( suma+arreglo[columnas][y]);  ver=false;  columnas=numeroColumnas; } }
+			
+			  if(ver){for ( columnas = 0 ; columnas < numeroColumnas ; columnas++ ){  if(arreglo[columnas][y3]!=0 && arreglo[columnas][y3]!=a1 && arreglo[columnas][y3]!=a2)   {   arreglo[x][y] =arreglo[columnas][y3]; arreglo[x3][y3] =10-( suma+arreglo[columnas][y3]);  ver=false;  columnas=numeroColumnas; } }}
+			}
+			//saber si estan en la misma columna
+			if(y==y3){
+			      	  for ( columnas = 0 ; columnas < numeroColumnas ; columnas++ ){  if(arreglo[x][columnas]!=0 && arreglo[x][columnas]!=a1 && arreglo[x][columnas]!=a2)   {      arreglo[x3][y3] =arreglo[x][columnas]; arreglo[x][y] =10-( suma+arreglo[x][columnas]);  ver=false;  columnas=numeroColumnas; } }
+			
+			  if(ver){for ( columnas = 0 ; columnas < numeroColumnas ; columnas++ ){  if(arreglo[x3][columnas]!=0 && arreglo[x3][columnas]!=a1 && arreglo[x3][columnas]!=a2)   {   arreglo[x][y] =arreglo[x3][columnas]; arreglo[x3][y3] =10-(  suma+arreglo[x3][columnas]);  ver=false;  columnas=numeroColumnas; } }}
+			}
+	
+		}//fin de contador 2
+		
+		} //fin de cuadrante 4
+		
+		
+	
+
+		
+	
+		if(Valida(arreglo) ){ //Se valida si la sumas de cada  filas y columnas es igual a 10
+	
+				for ( filas = 0 ; filas < numeroFilas ; filas++ ){
+		          
+	                gotoxy(50,f) ;
+                	for ( columnas = 0 ; columnas < numeroColumnas ; columnas++ ){
+    	           	if(arreglo[filas][columnas]==0){cont=cont+1;
+    			
+    			
+		               	}
+	    	printf ("%3d %3s", arreglo[filas][columnas], "   ") ;	
+	          }
+	    
+
+	    
+	    
+	   
+	    f++;
+	}
+			
+			
+		}else{//si la matriz no se ha llenado completamente se llama nuevamente la funcion  solucionsudoku();
+		
+		
+		cont_3=cont_3+1;
+		
+		if(cont_3<=10){
+			solucionsudoku(arreglo, numeroFilas, numeroColumnas);
+		}else {
+			 gotoxy(50,f) ;
+			cout<<"Sudoku  sin solucion";
+			getch();
+		}
+		
+			}
+		
+		
+	
+}
+
+
+bool Valida(int a[10][10]) {//funcion de validacion  de la matriz
+
+    return ((a[0][0]+a[0][1]+a[0][2]+a[0][3])==10)
+
+        &&((a[1][0]+a[1][1]+a[1][2]+a[1][3])==10)
+
+        &&((a[2][0]+a[2][1]+a[2][2]+a[2][3])==10)
+
+        &&((a[3][0]+a[3][1]+a[3][2]+a[3][3])==10)
+
+        &&((a[0][0]+a[1][0]+a[2][0]+a[3][0])==10)
+
+        &&((a[0][1]+a[1][1]+a[2][1]+a[3][1])==10)
+
+        &&((a[0][2]+a[1][2]+a[2][2]+a[3][2])==10)
+
+        &&((a[0][3]+a[1][3]+a[2][3]+a[3][3])==10)
+
+        &&((a[0][0]+a[0][1]+a[1][0]+a[1][1])==10)
+
+        &&((a[2][0]+a[2][1]+a[3][0]+a[3][1])==10)
+
+        &&((a[0][2]+a[0][3]+a[1][2]+a[1][3])==10)
+
+        &&((a[2][2]+a[2][3]+a[3][2]+a[3][3])==10);
+
+}
