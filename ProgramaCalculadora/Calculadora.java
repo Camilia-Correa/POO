@@ -1,3 +1,6 @@
+//Nombre: Maria Camila Correa Ardila
+//Codigo: 20202020078
+//Crear una aplicación en java  que simule una Calculadora y que tenga un método que reciba 3 parámetros (num1, num2, operación). En base al operación que recibe como parámetro (llamará el método correspondiente  a la operación, ej. sumar, restar,  multiplicar, dividir) y retornará el resultado e imprimirlo por consola.
 import java.util.*;
 import java.util.Scanner;
 public class Calculadora{
@@ -27,7 +30,9 @@ public class Calculadora{
     operacion=leer.nextInt();
     Menu(numero1,numero2,operacion);
   }
+  //Creamos el metodo que pide los 3 parametros principales
   public static int Menu(int num1,int num2,int op){
+    //Segun la operacion nos dirigimos al metodo correspondiente
     switch (op){
       case 1: 
       System.out.println("El resultado es = "+suma(num1,num2));

@@ -15,9 +15,9 @@ public class Circulo extends JApplet {
     //Generamos una nueva fuente, para poder modificar el tamaño del string y su fuente
     Font currentFont = g.getFont();
     Font newFont = currentFont.deriveFont(currentFont.getSize() * 1.4F);
-    g.setFont(new Font("Gadugi", Font.PLAIN, 300));
+    g.setFont(new Font("Gadugi", Font.PLAIN, 500));
     //Dibujamos el circulo (en este caso utilizare una "o" para simularlo) y en las cordenadas en el que lo queremos
-    g.drawString ("o", 60, 210);
+    g.drawString ("°", 30, 400);
   }
 
   public static void main (String[] args){
